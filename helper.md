@@ -29,3 +29,48 @@ path = /home/<user_name>/<folder_name>
 ```
 
 # Plex configuration
+First you need to download the installer on the plex website.
+Then :
+```
+sudo apt install apt-transport-https
+sudo dpkg -i plexmediaserver*.deb
+sudo systemctl enable plexmediaserver.service
+sudo systemctl start plexmediaserver.service
+sudo systemctl status plexmediaserver
+sudo nano /etc/ufw/applications.d/plexmediaserver
+```
+Add those line :
+```
+[plexmediaserver]
+title=Plex Media Server (Standard)
+description=The Plex Media Server
+ports=32400/tcp|3005/tcp|5353/udp|8324/tcp|32410:32414/udp
+
+[plexmediaserver-dlna]
+title=Plex Media Server (DLNA)
+description=The Plex Media Server (additional DLNA capability only)
+ports=1900/udp|32469/tcp
+
+[plexmediaserver-all]
+title=Plex Media Server (Standard + DLNA)
+description=The Plex Media Server (with additional DLNA capability)
+ports=32400/tcp|3005/tcp|5353/udp|8324/tcp|32410:32414/udp|1900/udp|32469/tcp
+```
+Then save and update: 
+```
+sudo ufw app update plexmediaserver
+sudo ufw allow plexmediaserver-all
+sudo ufw status verbose
+```
+To allowed plex to access an external HDD they are 2 ways :
+- The first one :
+```
+sudo chmod go+rx /media/<user>/<HDD Name>/
+sudo setfacl -m g:plex:rx /media/<user>/
+sudo chmod -R +rwX /media/<user>/<HDD Name>/<Library Folder>
+```
+- The second one:
+```
+sudo nano /etc/default/plexmediaserver
+# Change PLEX_MEDIA_SERVER_USER = <user>
+```
